@@ -6,19 +6,41 @@ To test the Lua script for UID validation, you can use OpenSSL to generate a cli
 
 Generate a client certificate with a UID using OpenSSL.
 
-1. Create a private key:
+1. **Generate the CA (Certificate Authority) key and certificate:**
+
     ```sh
+    # Generate a private key for the CA
+    openssl genpkey -algorithm RSA -out ca.key
+    
+    # Generate a self-signed CA certificate
+    openssl req -new -x509 -key ca.key -out ca.crt -days 365 -subj "/C=US/ST=California/L=San Francisco/O=Your Company/OU=Your Department/CN=CA"
+    ```
+
+2. **Generate the server key and certificate:**
+
+    ```sh
+    # Generate a private key for the server
+    openssl genpkey -algorithm RSA -out server.key
+    
+    # Generate a certificate signing request (CSR) for the server
+    openssl req -new -key server.key -out server.csr -subj "/C=US/ST=California/L=San Francisco/O=Your Company/OU=Your Department/CN=localhost"
+    
+    # Sign the server CSR with the CA certificate to create the server certificate
+    openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365
+    ```
+
+3. **Generate the client key and certificate:**
+
+    ```sh
+    # Generate a private key for the client
     openssl genpkey -algorithm RSA -out client.key
-    ```
-
-2. Create a certificate signing request (CSR) with the UID:
-    ```sh
-    openssl req -new -key client.key -out client.csr -subj "/C=US/ST=California/L=San Francisco/O=Your Company/OU=Your Department/CN=yourdomain.com/UID=test_uid"
-    ```
-
-3. Sign the CSR with your CA to create the client certificate:
-    ```sh
+    
+    # Generate a certificate signing request (CSR) for the client with UID
+    openssl req -new -key client.key -out client.csr -subj "/C=US/ST=California/L=San Francisco/O=Your Company/OU=Your Department/CN=client/UID=test_uid"
+    
+    # Sign the client CSR with the CA certificate to create the client certificate
     openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365
+    ```
     ```
 
 ### Step 2: Simulate Nginx Environment
