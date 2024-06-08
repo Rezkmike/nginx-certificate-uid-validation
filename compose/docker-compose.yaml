@@ -1,0 +1,21 @@
+version: '3'
+services:
+  nginx:
+    image: openresty/openresty:alpine
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
+      - ./validate_uid.lua:/etc/nginx/lua/validate_uid.lua
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - backend1
+      - backend2
+
+  backend1:
+    image: httpd:alpine
+    restart: always
+
+  backend2:
+    image: httpd:alpine
+    restart: always
