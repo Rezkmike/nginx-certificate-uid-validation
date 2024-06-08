@@ -1,0 +1,24 @@
+# Use the official Debian base image
+FROM debian:latest
+
+# Install necessary packages
+RUN apt-get update && \
+    apt-get install -y lua5.3 lua5.3-dev luarocks libssl-dev openssl wget unzip build-essential
+
+# Install LuaSec and luaossl via LuaRocks
+RUN luarocks install luasec
+RUN luarocks install luaossl
+
+# Set up the application directory
+RUN mkdir -p /app
+
+# Copy the Lua script and SSL certificates into the container
+COPY test_validate_uid.lua /app/test_validate_uid.lua
+COPY ssl /app/ssl
+
+# Define the working directory
+WORKDIR /app
+
+# Specify the command to run the Lua script
+CMD ["lua5.3", "test_validate_uid.lua"]
+
