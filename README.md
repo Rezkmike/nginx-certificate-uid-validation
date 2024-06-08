@@ -2,6 +2,24 @@
 
 To test the Lua script for UID validation, you can use OpenSSL to generate a client certificate with a specific UID and simulate the Nginx environment to check the script’s functionality. Here’s how you can do it:
 
+### Directory Structure
+
+Ensure your directory structure looks like this:
+
+```
+nginx-lua-uid-validation/compose
+├── docker-compose.yml
+├── nginx.conf
+├── validate_uid.lua
+└── ssl/
+    ├── ca.crt
+    ├── ca.key
+    ├── client.crt
+    ├── client.key
+    ├── server.crt
+    └── server.key
+```
+
 ### Step 1: Generate a Test Client Certificate
 
 Generate a client certificate with a UID using OpenSSL.
@@ -40,7 +58,6 @@ Generate a client certificate with a UID using OpenSSL.
     
     # Sign the client CSR with the CA certificate to create the client certificate
     openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365
-    ```
     ```
 
 ### Step 2: Simulate Nginx Environment
